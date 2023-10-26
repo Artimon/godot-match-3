@@ -10,9 +10,11 @@ public partial class Slot : Control {
 	[Export]
 	public Button _button;
 
-	public Vector2I position;
+	public Vector2I field;
 
 	public Gem gem;
+
+	public bool HasGem => gem != null;
 
 	public override void _Ready() {
 		_button.Pressed += () => {
@@ -27,13 +29,13 @@ public partial class Slot : Control {
 	/**
 	 * Mandatory initialisation to be able to use the slot.
 	 */
-	public void Setup(Grid grid, Vector2I position) {
+	public void Setup(Grid grid, Vector2I field) {
 		this._grid = grid;
-		this.position = position;
+		this.field = field;
 	}
 
 	public bool IsNextTo(Slot slot) {
-		var delta = position - slot.position;
+		var delta = field - slot.field;
 
 		delta.X = Math.Abs(delta.X);
 		delta.Y = Math.Abs(delta.Y);
