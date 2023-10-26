@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://r02ktsosike3"]
+
+[ext_resource type="Script" path="res://Scripts/Slot.cs" id="1_lqg8w"]
+
+[node name="Control" type="Control" node_paths=PackedStringArray("_button")]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_lqg8w")
+_button = NodePath("Button")
+
+[node name="Button" type="Button" parent="."]
+offset_right = 80.0
+offset_bottom = 80.0
+action_mode = 0
+keep_pressed_outside = true
