@@ -1,20 +1,26 @@
-[gd_scene load_steps=4 format=3 uid="uid://celrpheo8y2ux"]
+[gd_scene load_steps=5 format=3 uid="uid://celrpheo8y2ux"]
 
 [ext_resource type="Script" path="res://Scripts/Grid.cs" id="1_lunjg"]
 [ext_resource type="PackedScene" uid="uid://r02ktsosike3" path="res://Prefabs/Slot.tscn" id="2_s17g1"]
 [ext_resource type="PackedScene" uid="uid://c6l3qwaxra50l" path="res://Prefabs/Gem.tscn" id="3_ls401"]
+[ext_resource type="Script" path="res://Scripts/GridSwitch.cs" id="4_vswk3"]
 
 [node name="Default" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="Grid" type="Node2D" parent="." node_paths=PackedStringArray("_gridContainer", "_timer")]
+[node name="Grid" type="Node2D" parent="." node_paths=PackedStringArray("_gridContainer", "_timer", "_gridSwitch")]
 position = Vector2(-320, -320)
 script = ExtResource("1_lunjg")
 _gridContainer = NodePath("GridContainer")
 _slotPrefab = ExtResource("2_s17g1")
 _gemPrefab = ExtResource("3_ls401")
 _timer = NodePath("Timer")
+_gridSwitch = NodePath("GridSwitch")
+
+[node name="GridSwitch" type="Node2D" parent="Grid"]
+script = ExtResource("4_vswk3")
+_switchDuration = 0.35
 
 [node name="Timer" type="Timer" parent="Grid"]
 one_shot = true

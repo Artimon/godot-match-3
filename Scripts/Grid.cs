@@ -23,6 +23,9 @@ public partial class Grid : Node2D {
 
 	public Vector2 _slotSize;
 
+	[Export]
+	public GridSwitch _gridSwitch;
+
 	public override void _Ready() {
 		_CreateSlots();
 
@@ -209,6 +212,11 @@ public partial class Grid : Node2D {
 		var isNext = _slot.IsNextTo(slot);
 
 		GD.Print($"Trying to switch {_slot.field} and {slot.field} are next to each other: {isNext}");
+		if (isNext) {
+			_gridSwitch.Switch(slot, _slot, (slot1, slot2) => {
+				_gridSwitch.Switch(slot1, slot2);
+			});
+		}
 
 		_slot = null;
 	}

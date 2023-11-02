@@ -30,10 +30,14 @@ public partial class Gem : Node2D {
 
 		if (GlobalPosition.Y > _targetPosition.Y) {
 			GlobalPosition = _targetPosition;
-			GD.Print($"Arrived at: {_targetPosition}");
+			// GD.Print($"Arrived at: {_targetPosition}");
 
 			SetProcess(false);
 		}
+	}
+	public void MoveTo(Vector2 position, float weight) {
+		// GD.Print($"Moving {Position} to {position}");
+		Position = Position.Lerp(position, weight);
 	}
 
 	public bool IsSame(Gem gem) {
