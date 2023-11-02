@@ -1,10 +1,19 @@
-﻿using Godot;
+﻿using System.Collections.Generic;
+using Godot;
+using Match3.Extends;
 
 namespace Match3;
 
 public partial class Gem : Node2D {
+	public const float FallSpeed = 500f;
+
+	public int type;
+
 	[Export]
 	public Sprite2D _sprite;
+
+	[Export]
+	public Texture2D[] _skins;
 
 	public Slot _slot;
 
@@ -27,10 +36,30 @@ public partial class Gem : Node2D {
 		}
 	}
 
+	public bool IsSame(Gem gem) {
+		return type == gem.type;
+	}
+
+	public void DetermineType(int[] blockedTypes) {
+		var allowedTypes = new List<int>();
+
+		for (var i = 0; i < _skins.Length; i++) {
+			var isBlocked = System.Array.IndexOf(blockedTypes, i) > -1;
+			if (isBlocked) {
+				continue;
+			}
+
+			allowedTypes.Add(i);
+		}
+
+		type = allowedTypes.ToArray().GetRandomElement();
+		_sprite.Texture = _skins[type];
+	}
+
 	public void FallTo(Slot slot) {
 		slot.gem = this;
 
-		_speed = Vector2.Down * 80f;
+		_speed = Vector2.Down * FallSpeed;
 		_targetPosition = slot.GlobalPosition;
 
 		GD.Print($"Fall to: {_targetPosition}");

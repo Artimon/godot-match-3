@@ -1,0 +1,17 @@
+[gd_scene load_steps=6 format=3 uid="uid://c6l3qwaxra50l"]
+
+[ext_resource type="Script" path="res://Scripts/Gem.cs" id="1_wst4y"]
+[ext_resource type="Texture2D" uid="uid://dweh1swsqmu6r" path="res://Images/orb_11_t.png" id="2_bfj6n"]
+[ext_resource type="Texture2D" uid="uid://bhu8064rrltw2" path="res://Images/gm_t_13.png" id="3_b5q7h"]
+[ext_resource type="Texture2D" uid="uid://cd8bkqba8rgse" path="res://Images/gm_t_04.png" id="4_tnuig"]
+[ext_resource type="Texture2D" uid="uid://b4nofd81xg250" path="res://Images/orb_04_t.png" id="5_gyp5x"]
+
+[node name="Gem" type="Node2D" node_paths=PackedStringArray("_sprite")]
+script = ExtResource("1_wst4y")
+_sprite = NodePath("Sprite2D")
+_skins = Array[Texture2D]([ExtResource("2_bfj6n"), ExtResource("3_b5q7h"), ExtResource("4_tnuig"), ExtResource("5_gyp5x")])
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(40, 40)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_bfj6n")

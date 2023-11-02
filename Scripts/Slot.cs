@@ -43,4 +43,15 @@ public partial class Slot : Control {
 		return delta == Vector2I.Right ||
 		       delta == Vector2I.Down;
 	}
+
+	public bool HasMatchingGem(Slot slot) {
+		if (
+			gem == null ||
+			slot.gem == null
+		) {
+			return false;
+		}
+
+		return gem.IsSame(slot.gem);
+	}
 }

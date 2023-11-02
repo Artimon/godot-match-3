@@ -12,6 +12,7 @@ script = ExtResource("1_lqg8w")
 _button = NodePath("Button")
 
 [node name="Button" type="Button" parent="."]
+layout_mode = 0
 offset_right = 80.0
 offset_bottom = 80.0
 action_mode = 0
