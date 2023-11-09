@@ -200,6 +200,76 @@ public partial class Grid : Node2D {
 		return slot != null;
 	}
 
+	public bool TryProcessMatches(Slot slot) {
+		var success = _TryGetMatches(slot, out var slots);
+		if (!success) {
+			return false;
+		}
+
+		foreach (var matchingSlot in slots) {
+			matchingSlot.TryClearGem();
+		}
+
+		return true;
+	}
+
+	public bool _TryGetMatches(Slot slot, out List<Slot> slots) {
+		slots = new List<Slot>();
+
+		var horSlots = new List<Slot>();
+
+		_AddSlotsInDirection(slot, horSlots, Vector2I.Right);
+		_AddSlotsInDirection(slot, horSlots, Vector2I.Left);
+
+		// Only 2, since the source is not added.
+		if (horSlots.Count < 2) {
+			horSlots.Clear();
+		}
+
+		slots.AddRange(horSlots);
+
+		var verSlots = new List<Slot>();
+
+		_AddSlotsInDirection(slot, verSlots, Vector2I.Up);
+		_AddSlotsInDirection(slot, verSlots, Vector2I.Down);
+
+		// Only 2, since the source is not added.
+		if (verSlots.Count < 2) {
+			verSlots.Clear();
+		}
+
+		slots.AddRange(verSlots);
+
+		if (
+			horSlots.Count > 0 ||
+			verSlots.Count > 0
+		) {
+			slots.Add(slot);
+
+			GD.Print($"We have a winner! ({slots.Count} gems)");
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private void _AddSlotsInDirection(Slot slot, List<Slot> checkSlots, Vector2I direction) {
+		for (var n = 1; n < 3; n++) {
+			var field = slot.field + direction * n;
+			var success = TryGetSlot(field, out var checkSlot);
+			if (!success) {
+				break;
+			}
+
+			if (!slot.HasMatchingGem(checkSlot)) {
+				break;
+			}
+
+			checkSlots.Add(checkSlot);
+		}
+	}
+
 	public void OnSelect(Slot slot) {
 		_slot = slot;
 	}
@@ -211,9 +281,16 @@ public partial class Grid : Node2D {
 
 		var isNext = _slot.IsNextTo(slot);
 
-		GD.Print($"Trying to switch {_slot.field} and {slot.field} are next to each other: {isNext}");
+		// GD.Print($"Trying to switch {_slot.field} and {slot.field} are next to each other: {isNext}");
 		if (isNext) {
 			_gridSwitch.Switch(slot, _slot, (slot1, slot2) => {
+				var hasMatches1 = TryProcessMatches(slot1);
+				var hasMatches2 = TryProcessMatches(slot2);
+
+				if (hasMatches1 || hasMatches2) {
+					return;
+				}
+
 				_gridSwitch.Switch(slot1, slot2);
 			});
 		}

@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using Match3.Extends;
 
 namespace Match3;
 
@@ -53,5 +54,15 @@ public partial class Slot : Control {
 		}
 
 		return gem.IsSame(slot.gem);
+	}
+
+	public bool TryClearGem() {
+		if (!HasGem) {
+			return false;
+		}
+
+		gem.Remove();
+
+		return true;
 	}
 }
