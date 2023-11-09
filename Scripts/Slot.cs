@@ -56,12 +56,27 @@ public partial class Slot : Control {
 		return gem.IsSame(slot.gem);
 	}
 
+	public bool TryDropGemTo(Slot slot) {
+		if (!HasGem) {
+			return false;
+		}
+
+		gem.FallTo(slot);
+		gem = null;
+
+		return true;
+	}
+
 	public bool TryClearGem() {
 		if (!HasGem) {
 			return false;
 		}
 
-		gem.Remove();
+		var gemToRemove = gem;
+
+		ControllerDefer.Delay += gemToRemove.Remove;
+
+		gem = null;
 
 		return true;
 	}

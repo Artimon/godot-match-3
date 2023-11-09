@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://celrpheo8y2ux"]
+[gd_scene load_steps=6 format=3 uid="uid://celrpheo8y2ux"]
 
+[ext_resource type="Script" path="res://Scripts/ControllerDefer.cs" id="1_38k11"]
 [ext_resource type="Script" path="res://Scripts/Grid.cs" id="1_lunjg"]
 [ext_resource type="PackedScene" uid="uid://r02ktsosike3" path="res://Prefabs/Slot.tscn" id="2_s17g1"]
 [ext_resource type="PackedScene" uid="uid://c6l3qwaxra50l" path="res://Prefabs/Gem.tscn" id="3_ls401"]
@@ -8,6 +9,9 @@
 [node name="Default" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="ControllerDefer" type="Node2D" parent="."]
+script = ExtResource("1_38k11")
 
 [node name="Grid" type="Node2D" parent="." node_paths=PackedStringArray("_gridContainer", "_timer", "_gridSwitch")]
 position = Vector2(-320, -320)

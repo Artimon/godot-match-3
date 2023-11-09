@@ -5,7 +5,7 @@ using Match3.Extends;
 namespace Match3;
 
 public partial class Gem : Node2D {
-	public const float FallSpeed = 500f;
+	public const float FallSpeed = 650f;
 
 	public int type;
 
@@ -25,6 +25,10 @@ public partial class Gem : Node2D {
 		SetProcess(false);
 	}
 
+	public override void _ExitTree() {
+		Grid.instance.RemoveFallingGem(this);
+	}
+
 	public override void _Process(double delta) {
 		GlobalPosition += _speed * (float)delta;
 
@@ -32,9 +36,12 @@ public partial class Gem : Node2D {
 			GlobalPosition = _targetPosition;
 			// GD.Print($"Arrived at: {_targetPosition}");
 
+			Grid.instance.RemoveFallingGem(this);
+
 			SetProcess(false);
 		}
 	}
+
 	public void MoveTo(Vector2 position, float weight) {
 		// GD.Print($"Moving {Position} to {position}");
 		Position = Position.Lerp(position, weight);
@@ -63,10 +70,12 @@ public partial class Gem : Node2D {
 	public void FallTo(Slot slot) {
 		slot.gem = this;
 
+		Grid.instance.AddFallingGem(this);
+
 		_speed = Vector2.Down * FallSpeed;
 		_targetPosition = slot.GlobalPosition;
 
-		GD.Print($"Fall to: {_targetPosition}");
+		// GD.Print($"Fall to: {_targetPosition}");
 		SetProcess(true);
 	}
 }

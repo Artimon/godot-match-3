@@ -5,6 +5,8 @@ using Match3.Extends;
 namespace Match3;
 
 public partial class Grid : Node2D {
+	public static Grid instance;
+
 	[Export]
 	public GridContainer _gridContainer;
 
@@ -26,7 +28,11 @@ public partial class Grid : Node2D {
 	[Export]
 	public GridSwitch _gridSwitch;
 
+	public readonly List<Gem> _fallingGems = new ();
+
 	public override void _Ready() {
+		instance = this;
+
 		_CreateSlots();
 
 		_timer.Timeout += FillGrid;
@@ -44,6 +50,49 @@ public partial class Grid : Node2D {
 		if (isMouseLeftUp) {
 			_slot = null;
 		}
+	}
+
+	public void AddFallingGem(Gem gem) {
+		_fallingGems.Add(gem);
+	}
+
+	public void RemoveFallingGem(Gem gem) {
+		_fallingGems.Remove(gem);
+
+		GD.Print($"Falling gems remaining: {_fallingGems.Count}");
+		if (_fallingGems.Count > 0) {
+			return;
+		}
+
+		GD.Print("Now checking field!");
+		_ProcessPostGemDrop();
+	}
+
+	public void _ProcessPostGemDrop() {
+		var width = _gridContainer.Columns;
+		var height = _gridContainer.Columns;
+
+		var hasAnyMatches = false;
+
+		for (var x = 0; x < width; x++) {
+			for (var y = 0; y < height; y++) {
+				var field = new Vector2I(x, y);
+
+				TryGetSlot(field, out var slot);
+
+				var hasMatches = TryProcessMatches(slot);
+				if (hasMatches) {
+					hasAnyMatches = true;
+				}
+			}
+		}
+
+		if (!hasAnyMatches) {
+			return;
+		}
+
+		DropGems();
+		FillGrid();
 	}
 
 	public void _CreateSlots() {
@@ -122,7 +171,9 @@ public partial class Grid : Node2D {
 
 		gem.GlobalPosition = position;
 
-		var success = TryGetFallToSlot(field, out var targetSlot);
+		var spawnField = new Vector2I(field.X, field.Y - 1);
+
+		var success = TryGetFallToSlot(spawnField, out var targetSlot);
 		if (!success) {
 			return;
 		}
@@ -133,6 +184,32 @@ public partial class Grid : Node2D {
 		gem.FallTo(targetSlot);
 
 		// GD.Print($"TargetSlot: {targetSlot.field}");
+	}
+
+	public void DropGems() {
+		var width = _gridContainer.Columns;
+		var height = _gridContainer.Columns;
+
+		for (var x = 0; x < width; x++) {
+			for (var y = 0; y < height; y++) {
+				var field = new Vector2I {
+					X = x,
+					Y = (height - 1) - y
+				};
+
+				TryGetSlot(field, out var slot);
+				if (!slot.HasGem) {
+					continue;
+				}
+
+				var success = TryGetFallToSlot(field, out var targetSlot);
+				if (!success) {
+					continue;
+				}
+
+				slot.TryDropGemTo(targetSlot);
+			}
+		}
 	}
 
 	/**
@@ -183,6 +260,7 @@ public partial class Grid : Node2D {
 		var height = _gridContainer.Columns;
 		var field = startField;
 
+		field.Y += 1;
 		slot = null;
 
 		while (field.Y < height) {
@@ -255,7 +333,9 @@ public partial class Grid : Node2D {
 	}
 
 	private void _AddSlotsInDirection(Slot slot, List<Slot> checkSlots, Vector2I direction) {
-		for (var n = 1; n < 3; n++) {
+		var size = _gridContainer.Columns;
+
+		for (var n = 1; n < size; n++) {
 			var field = slot.field + direction * n;
 			var success = TryGetSlot(field, out var checkSlot);
 			if (!success) {
@@ -287,11 +367,15 @@ public partial class Grid : Node2D {
 				var hasMatches1 = TryProcessMatches(slot1);
 				var hasMatches2 = TryProcessMatches(slot2);
 
-				if (hasMatches1 || hasMatches2) {
+				var hasMatches = hasMatches1 || hasMatches2;
+				if (!hasMatches) {
+					_gridSwitch.Switch(slot1, slot2);
+
 					return;
 				}
 
-				_gridSwitch.Switch(slot1, slot2);
+				DropGems();
+				FillGrid();
 			});
 		}
 
